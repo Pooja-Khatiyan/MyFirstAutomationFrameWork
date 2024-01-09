@@ -20,4 +20,5 @@ public class AppConstants {
 //List is an order based collection if result is out of order test get failed.
 	public static final String REGISTER_DATA_SHEET_NAME = "register";
 	public static final String PRODUCT_DATA_SHEET_NAME ="product";
+	public static final String LOGIN_ERROR_MESSAGE ="Warning: No match for E-Mail Address and/or Password.";
 }
