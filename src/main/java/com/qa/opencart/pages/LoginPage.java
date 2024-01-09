@@ -21,6 +21,7 @@ public class LoginPage {
 	private By forgotPwdLink = By.linkText("Forgotten Password");//to check make it fail
 	private By logo = By.cssSelector("img[title='naveenopencart']");
 	private By registerLink = By.linkText("Register");
+	private By loginErrorMessg = By.xpath("//body//div[contains(@class,'alert')]");
 
 	// Page Constructor : to initialize driver
 	public LoginPage(WebDriver driver) {
@@ -80,6 +81,26 @@ public class LoginPage {
 		// it will return true in either cases if logged in or not : bug : see later
 //it doesn't contain any assertion
 		}
+	
+	
+	@Step("login with wrong username {0} and password {1}")
+	public boolean doLoginWithWrongCredentials(String username, String pwd) {
+		System.out.println("wrong Creds are: " + username + ":" + pwd);
+		eleUtil.waitForVisibilityOfElement(userName, AppConstants.MEDIUM_DEFAULT_WAIT);
+		eleUtil.doSendKeys(userName, username);
+		eleUtil.doSendKeys(password, pwd);
+		eleUtil.doClick(loginBtn);
+		String errorMessg=eleUtil.doElementGetText(loginErrorMessg);
+		System.out.println(errorMessg);
+		if(errorMessg.contains(AppConstants.LOGIN_ERROR_MESSAGE)) {
+			return true; 
+			}
+		return false;
+		}
+		
+	
+	
+	
 	/**
 	 * it have locator only and only specific to page class and page behavior or we
 	 * can say that it have locator & respective public layers
