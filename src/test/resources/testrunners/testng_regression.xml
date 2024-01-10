@@ -15,10 +15,17 @@
 	-->
 </listeners>
 
-	<test name="Login Page Test">
+	<!--<test name="Login Page Test">
 		<parameter name="browser" value="chrome"/>
 		<classes>
 			<class name="com.qa.opencart.tests.LoginPageTest" />
+		</classes>
+	</test>-->
+	
+	<test name="Login Page Negative Test">
+		<parameter name="browser" value="chrome"/>
+		<classes>
+			<class name="com.qa.opencart.tests.LoginPageNegativeTest" />
 		</classes>
 	</test>
 
