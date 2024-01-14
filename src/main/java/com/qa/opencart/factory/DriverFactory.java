@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;//this class help to get the properties 
 //import java.util.logging.FileHandler;
 
@@ -13,8 +15,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.io.FileHandler;//for FileHandler
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.safari.SafariDriver;
+
 import com.qa.opencart.exception.FrameworkException;
 
 //code for driver initialization
@@ -25,31 +29,47 @@ public class DriverFactory {
 	public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<WebDriver>();
 
 	public static String highlight = null;
-	
-	
+
 	public WebDriver initializeDriver(Properties prop) {
 		String browserName = prop.getProperty("browser");
 		// String browserName = System.getProperty("browser");
 		System.out.println("browser name is: " + browserName);
 
-		//highlight = prop.getProperty("highlight");
+		highlight = prop.getProperty("highlight");
 		optionsManager = new OptionsManager(prop);
 
 		switch (browserName.toLowerCase().trim()) {
 		case "chrome":
-			// driver = new ChromeDriver(optionsManager.getChromeOptions());
-//			we have to supply driver with set method
-			tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run it on grid:
+				initRemoteDriver(browserName);
+			} else {
+				// run it on local:
+				// driver = new ChromeDriver(optionsManager.getChromeOptions());
+				tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+			}
 			break;
+			
 		case "firefox":
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run it on grid:
+				initRemoteDriver(browserName);
+			} else {
 			// driver = new FirefoxDriver(optionsManager.getFirefoxOptions());
 			tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
+			}
 			break;
+			
 		case "edge":
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run it on grid:
+				initRemoteDriver(browserName);
+			} else {
 			// driver = new EdgeDriver(optionsManager.getEdgeOptions());
 			tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));// every thread will get their own EdgeDriver copy
-																		
+			}													
 			break;
+			
 		case "safari":
 			// driver = new SafariDriver();
 			tlDriver.set(new SafariDriver());
@@ -70,17 +90,42 @@ public class DriverFactory {
 		return getDriver();
 
 	}
+	/**
+	 * run tests on grid 
+	 * @param browserName
+	 */
+
+	private void initRemoteDriver(String browserName) {
+		System.out.println("Running tests on GRID with browser: " + browserName);
+		try {
+			switch (browserName.toLowerCase().trim()) {
+			case "chrome":
+		tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getChromeOptions()));
+				break;
+			case "firefox":
+		tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getFirefoxOptions()));
+				break;
+			case "edge":
+		tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getEdgeOptions()));
+				break;
+
+			default:
+				System.out.println("wrong brsowser info... can not run on grid remote machine...");
+				break;
+			}
+		} catch (MalformedURLException e) {
+
+		}
+	}
 
 	public static WebDriver getDriver() {// it will local copy of the driver
 		return tlDriver.get();
 	}
 
-	/**
-	 * it method helps to initialized /to read the config.properties,selenium can
-	 * not connect with the config.property ,so we have to write a java code.for
-	 * this we maintain a properties reference here properties is a class which
-	 * already there in java
-	 */
+/**
+ *this method helps to initialized /to read the config.properties,selenium can not connect with the config.property,so we have to
+ * write a java code.for this we maintain a properties reference here properties is a class which  already there in java
+ */
 	public Properties initializedProp() {
 		// mvn clean install -Denv="qa"
 		FileInputStream ip = null;
@@ -125,7 +170,7 @@ public class DriverFactory {
 //		try {
 //			FileInputStream ip = new FileInputStream("./src/test/resources/config/config.properties");
 //			// to make connect with the config we use this class of java . means from the root of the current project
-		
+
 //			prop.load(ip);
 //		} catch (FileNotFoundException e) {
 //			e.printStackTrace();
@@ -141,23 +186,25 @@ public class DriverFactory {
 	 * @param methodName
 	 * @return
 	 */
-	
-	public static String getScreenshot(String methodName) {//here we have to  pass webelement
-	//to take the screenshot of only specific element haing issue ,draw boarder by js 	
-		File srcFile = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);//screenshot is taken in the form of file or file object
 
-		String path = System.getProperty("user.dir") + "/screenshot/" + methodName + "_" + System.currentTimeMillis()+ ".png";
-		File destination = new File(path);//to supply file object we have create a desination path
+	public static String getScreenshot(String methodName) {// here we have to pass webelement
+		// to take the screenshot of only specific element haing issue ,draw boarder by
+		// js
+		File srcFile = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);// screenshot is taken in the
+																						// form of file or file object
+
+		String path = System.getProperty("user.dir") + "/screenshot/" + methodName + "_" + System.currentTimeMillis()
+				+ ".png";
+		File destination = new File(path);// to supply file object we have create a desination path
 //		try {
 //		Path srcPath = srcFile.toPath();
 //        Path destPath = destination.toPath();
 //        Files.copy(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
 //    } catch (IOException e) {
-		
-		
+
 		try {
-		FileHandler.copy(srcFile, destination);
-	} catch (IOException e) {
+			FileHandler.copy(srcFile, destination);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
@@ -168,9 +215,8 @@ public class DriverFactory {
 //interview question: how we will get our project directory through => System.getProperty("user.dir") i.e POMSeries
 //name is already predefine user.dir i.e current directory. we are appending with time to avoid image replacement with 
 //previously saved image : to get unique name every time
-		//System.out.println("user directory: " + System.getProperty("user.dir"));
-		//System.out.println("screenshot path: " + path);
-		
+		// System.out.println("user directory: " + System.getProperty("user.dir"));
+		// System.out.println("screenshot path: " + path);
 
 	}
 }

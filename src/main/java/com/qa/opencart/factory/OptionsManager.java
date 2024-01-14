@@ -28,6 +28,12 @@ public class OptionsManager {
 		if (Boolean.parseBoolean(prop.getProperty("headless").trim()))co.addArguments("--headless");
 		// if there is single line we can also write if statement this way
 		if (Boolean.parseBoolean(prop.getProperty("incognito").trim()))co.addArguments("--incognito");
+		if(Boolean.parseBoolean(prop.getProperty("remote"))) {
+			co.setCapability("browserName", "chrome");
+			//co.setCapability("enableVNC", "true");
+		}
+		
+		
 		return co;
 	}
 
