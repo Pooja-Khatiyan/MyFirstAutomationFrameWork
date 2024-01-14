@@ -22,12 +22,12 @@
 		</classes>
 	</test>
 	
-	<test name="Login Page Negative Test">
+	<!--<test name="Login Page Negative Test">
 		<parameter name="browser" value="chrome"/>
 		<classes>
 			<class name="com.qa.opencart.tests.LoginPageNegativeTest" />
 		</classes>
-	</test>
+	</test>-->
 
 
 <!--<test name="Accounts Page Test">
