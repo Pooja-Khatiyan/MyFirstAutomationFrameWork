@@ -22,7 +22,7 @@ import com.qa.opencart.factory.DriverFactory;
 public class ExtentReportListener implements ITestListener {
 
 	private static final String OUTPUT_FOLDER = "./reports/";// it is a folder name in while we want to save report.
-	private static final String FILE_NAME = "TestExecutionReort.html";// it is the report file name.both name could be
+	private static final String FILE_NAME = "TestExecutionReport.html";// it is the report file name.both name could be
 																		// anything
 	private static ExtentReports extent = init();
 	public static ThreadLocal<ExtentTest> test = new ThreadLocal<ExtentTest>();
