@@ -32,13 +32,14 @@ protected RegisterPage registerPage;
 protected SoftAssert softAssert;
 
 @Step("initializing the browser")
-@Parameters({"browser"})
+@Parameters({"browser" , "browserversion"})
 @BeforeTest
-public void setUp(String browserName) {//this browserName is coming from xml file
+public void setUp(String browserName ,String browserversion) {//this browserName is coming from xml file
 	df = new DriverFactory();
 	prop = df.initializedProp();
 	if(browserName!=null) { //very important check to give preferance to xml file
 		prop.setProperty("browser", browserName);
+		prop.setProperty("browserversion", browserversion);
 	}
 	driver = df.initializeDriver(prop);
 	loginPage = new LoginPage(driver);//initializing driver
