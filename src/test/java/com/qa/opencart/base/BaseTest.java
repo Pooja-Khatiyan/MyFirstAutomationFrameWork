@@ -1,6 +1,8 @@
 package com.qa.opencart.base;
 import java.util.Properties;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -31,15 +33,21 @@ protected ProductInfoPage productInfoPage;
 protected RegisterPage registerPage;
 protected SoftAssert softAssert;
 
+private static final Logger log = LogManager.getLogger(BaseTest.class);
+
 @Step("initializing the browser")
-@Parameters({"browser" , "browserversion"})
+@Parameters({"browser" , "browserversion" , "testname"})
 @BeforeTest
-public void setUp(String browserName ,String browserversion) {//this browserName is coming from xml file
+public void setUp(String browserName ,String browserVersion, String testName) {//this browserName is coming from xml file
+
+	log.info(browserName +" : " + browserVersion + " : " + testName );
+	
 	df = new DriverFactory();
 	prop = df.initializedProp();
 	if(browserName!=null) { //very important check to give preferance to xml file
 		prop.setProperty("browser", browserName);
-		prop.setProperty("browserversion", browserversion);
+		prop.setProperty("browserversion", browserVersion);
+	prop.setProperty("testname", testName);
 	}
 	driver = df.initializeDriver(prop);
 	loginPage = new LoginPage(driver);//initializing driver
@@ -50,6 +58,7 @@ public void setUp(String browserName ,String browserversion) {//this browserName
 @AfterTest
 public void tearDown() {
 	driver.quit();
+	log.info("browser is closed...");
 }
 
 }

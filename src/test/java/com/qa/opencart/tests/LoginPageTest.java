@@ -1,4 +1,6 @@
 package com.qa.opencart.tests;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 //execution will start from here
 import org.testng.Assert;
 import org.testng.annotations.Listeners;
@@ -23,11 +25,15 @@ import io.qameta.allure.Story;
 public class LoginPageTest extends BaseTest  {
 //this class is child of BaseTest so inherit all it's property
 //at class level we can define: description,severity
+	
+private static final Logger log = LogManager.getLogger(LoginPageTest.class);	
+	
 	@Description("Login Page Title Test...")
 	@Severity(SeverityLevel.MINOR)
 	@Test(priority = 1)
 	public void loginPageTitleTest() {
 String actTitle =loginPage.getLoginPageTitle();
+log.info("actual login page title: " + actTitle);
 	Assert.assertEquals(actTitle, AppConstants.LOGIN_PAGE_TITLE);
 	}
 	@Description("Login Page URL Test...")

@@ -9,6 +9,8 @@ import java.net.URL;
 import java.util.Properties;//this class help to get the properties 
 //import java.util.logging.FileHandler;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -28,24 +30,29 @@ public class DriverFactory {
 	OptionsManager optionsManager;
 	public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<WebDriver>();
 
+	private static final Logger log = LogManager.getLogger(DriverFactory.class);
 	public static String highlight = null;
 
 	public WebDriver initializeDriver(Properties prop) {
 		String browserName = prop.getProperty("browser");
 		// String browserName = System.getProperty("browser");
-		System.out.println("browser name is: " + browserName);
-
+		//System.out.println("browser name is: " + browserName);
+        log.info("browser name is: " + browserName);
+		
 		highlight = prop.getProperty("highlight");
 		optionsManager = new OptionsManager(prop);
 
 		switch (browserName.toLowerCase().trim()) {
 		case "chrome":
+		log.info("Running it on chrome browser...");	
 			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
 				// run it on grid:
+				log.info("Running it on remote machine");
 				initRemoteDriver(browserName);
 			} else {
 				// run it on local:
 				// driver = new ChromeDriver(optionsManager.getChromeOptions());
+				log.info("Running it on local");
 				tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
 			}
 			break;
@@ -76,7 +83,8 @@ public class DriverFactory {
 			break;
 
 		default:
-			System.out.println("please pass the right browser name... " + browserName);
+			//System.out.println("please pass the right browser name... " + browserName);
+			log.warn("please pass the right browser name... " + browserName);
 			throw new FrameworkException("No Browser Found...");
 		}
 //		driver.manage().deleteAllCookies(); with normal driver
@@ -96,7 +104,8 @@ public class DriverFactory {
 	 */
 
 	private void initRemoteDriver(String browserName) {
-		System.out.println("Running tests on GRID with browser: " + browserName);
+		//System.out.println("Running tests on GRID with browser: " + browserName);
+		log.info("Running tests on GRID with browser: " + browserName);
 		try {
 			switch (browserName.toLowerCase().trim()) {
 			case "chrome":
@@ -110,7 +119,8 @@ public class DriverFactory {
 				break;
 
 			default:
-				System.out.println("wrong brsowser info... can not run on grid remote machine...");
+				//System.out.println("wrong brsowser info... can not run on grid remote machine...");
+				log.warn("wrong brsowser info... can not run on grid remote machine...");
 				break;
 			}
 		} catch (MalformedURLException e) {
@@ -125,17 +135,21 @@ public class DriverFactory {
 /**
  *this method helps to initialized /to read the config.properties,selenium can not connect with the config.property,so we have to
  * write a java code.for this we maintain a properties reference here properties is a class which  already there in java
- */
+ */ 
 	public Properties initializedProp() {
 		// mvn clean install -Denv="qa"
 		FileInputStream ip = null;
 		prop = new Properties(); // object of properties
 		String envName = System.getProperty("env");
-		System.out.println("environment name is: " + envName);
+		//System.out.println("environment name is: " + envName);
+		log.info("environment name is: " + envName);
+		
 		try {
 			if (envName == null) {
-				System.out.println("your env is null... hence running test on QA env...");
+				log.warn("your env is null... hence running test on QA env...");
+				//System.out.println("your env is null... hence running test on QA env...");
 				ip = new FileInputStream("./src/test/resources/config/config.qa.properties");
+			log.info(ip);
 			} else {
 				switch (envName.toLowerCase().trim()) {
 				case "qa":
@@ -155,7 +169,8 @@ public class DriverFactory {
 					break;
 
 				default:
-					System.out.println("please pass the right env name... " + envName);
+					log.error("wrong env name : " + envName);
+					//System.out.println("please pass the right env name... " + envName);
 					throw new FrameworkException("Wrong Environment Name: " + envName);
 				}
 			}
