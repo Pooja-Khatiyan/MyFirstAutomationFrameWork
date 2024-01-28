@@ -47,7 +47,7 @@ public void setUp(String browserName ,String browserVersion, String testName) {/
 	if(browserName!=null) { //very important check to give preferance to xml file
 		prop.setProperty("browser", browserName);
 		prop.setProperty("browserversion", browserVersion);
-	prop.setProperty("testname", testName);
+	    prop.setProperty("testname", testName);
 	}
 	driver = df.initializeDriver(prop);
 	loginPage = new LoginPage(driver);//initializing driver

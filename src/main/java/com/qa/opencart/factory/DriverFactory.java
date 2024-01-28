@@ -149,7 +149,7 @@ public class DriverFactory {
 				log.warn("your env is null... hence running test on QA env...");
 				//System.out.println("your env is null... hence running test on QA env...");
 				ip = new FileInputStream("./src/test/resources/config/config.qa.properties");
-			log.info(ip);
+			
 			} else {
 				switch (envName.toLowerCase().trim()) {
 				case "qa":
@@ -179,6 +179,7 @@ public class DriverFactory {
 		}
 		try {
 			prop.load(ip);
+			log.info(prop);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
